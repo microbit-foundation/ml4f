@@ -14,10 +14,10 @@
  *   http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0484c/CHDCICDF.html  // M0+
  */
 
-import * as assembler from "./assembler";
-import { assert, lookup } from "./util";
+import * as assembler from "./assembler.js";
+import { assert, lookup } from "./util.js";
 
-const thumbRegs: pxt.Map<number> = {
+const thumbRegs: Record<string, number> = {
     "r0": 0,
     "r1": 1,
     "r2": 2,
@@ -39,7 +39,7 @@ const thumbRegs: pxt.Map<number> = {
     "r15": 15,
 }
 
-const armConditions: SMap<number> = {
+const armConditions: Record<string, number> = {
     "eq": 0,
     "ne": 1,
     "cs": 2,
@@ -60,7 +60,7 @@ const armConditions: SMap<number> = {
     "al": 14,
 }
 
-let fpRegs: pxt.Map<number>
+let fpRegs: Record<string, number>
 
 export class ThumbProcessor extends assembler.AbstractProcessor {
     runtimeIsARM = false
@@ -424,7 +424,7 @@ export class ThumbProcessor extends assembler.AbstractProcessor {
         let nextGoodSpot: assembler.Line
         let needsJumpOver = false
         let outlines: assembler.Line[] = []
-        let values: pxt.Map<string> = {}
+        let values: Record<string, string> = {}
         let seq = 1
 
         for (let i = 0; i < f.lines.length; ++i) {

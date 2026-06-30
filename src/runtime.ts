@@ -1,4 +1,4 @@
-import { float16AsUintToFloat } from "./float16"
+import { float16AsUintToFloat } from "./float16.js"
 
 export function mkRuntime(mem: Float32Array) {
     return {

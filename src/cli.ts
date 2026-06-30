@@ -2,7 +2,10 @@ import * as tf from '@tensorflow/tfjs'
 import * as fs from 'fs'
 import * as path from 'path'
 import * as child_process from 'child_process'
-import { program as commander } from "commander"
+import { createRequire } from 'module'
+// commander is CJS; its default export carries .program. Destructuring the
+// named export directly is not reliable across Node's ESM/CJS interop.
+import commanderPkg from "commander"
 import {
     compileModel, compileModelAndFullValidate,
     evalModel,
@@ -11,7 +14,10 @@ import {
     Options, runModel, sampleModel, testAllModels,
     testFloatConv,
     toCSource
-} from '../../src/ml4f'
+} from './ml4f.js'
+
+const commander = commanderPkg.program
+const require = createRequire(import.meta.url)
 
 interface CmdOptions {
     debug?: boolean
@@ -190,7 +196,7 @@ export async function mainCli() {
     // shut up warning
     (tf.backend() as any).firstUse = false;
 
-    const pkg = require("../../package.json")
+    const pkg = require("../package.json")
     commander
         .version(pkg.version)
         .option("-d, --debug", "enable debugging")
@@ -243,5 +249,3 @@ export async function mainCli() {
         console.error(e.stack)
     }
 }
-
-if (require.main === module) mainCli()

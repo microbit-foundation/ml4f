@@ -1,9 +1,9 @@
 import * as tf from '@tensorflow/tfjs'
-import { ThumbProcessor } from './thumb';
-import * as assembler from './assembler'
-import * as U from './util'
-import { assignLayerInfos, compileModelCore, CompileResult, LayerStats, partialModels, prefixModels, shapeElts } from './compiler';
-import { Options } from './ir';
+import { ThumbProcessor } from './thumb.js';
+import * as assembler from './assembler.js'
+import * as U from './util.js'
+import { assignLayerInfos, compileModelCore, CompileResult, LayerStats, partialModels, prefixModels, shapeElts } from './compiler.js';
+import { Options } from './ir.js';
 
 const epsF32 = 0.00009
 const epsF16 = 0.01

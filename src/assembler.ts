@@ -1,6 +1,6 @@
-import { float16toUInt16, float32ToUInt32 } from "./float16";
-import { ThumbProcessor } from "./thumb";
-import { assert, oops, endsWith, userError, mapMap } from "./util";
+import { float16toUInt16, float32ToUInt32 } from "./float16.js";
+import { ThumbProcessor } from "./thumb.js";
+import { assert, oops, endsWith, userError, mapMap } from "./util.js";
 
 export let debug = false
 
@@ -272,19 +272,19 @@ export class File {
     private scopeId = 0;
     public errors: InlineError[] = [];
     public buf: number[];
-    private labels: pxt.Map<number> = {};
-    private equs: pxt.Map<number> = {};
-    private userLabelsCache: pxt.Map<number>;
-    private stackpointers: pxt.Map<number> = {};
+    private labels: Record<string, number> = {};
+    private equs: Record<string, number> = {};
+    private userLabelsCache: Record<string, number>;
+    private stackpointers: Record<string, number> = {};
     private stack = 0;
     public commPtr = 0;
     public peepOps = 0;
     public peepDel = 0;
-    public peepCounts: pxt.Map<number> = {}
+    public peepCounts: Record<string, number> = {}
     private stats = "";
     public throwOnError = false;
     public disablePeepHole = false;
-    public stackAtLabel: pxt.Map<number> = {};
+    public stackAtLabel: Record<string, number> = {};
     private prevLabel: string;
 
     protected emitShort(op: number) {
@@ -1187,8 +1187,8 @@ export interface Encoder {
 // class and provide Encoders and Instructions
 export abstract class AbstractProcessor {
 
-    public encoders: pxt.Map<Encoder>;
-    public instructions: pxt.Map<Instruction[]>;
+    public encoders: Record<string, Encoder>;
+    public instructions: Record<string, Instruction[]>;
     public file: File = null;
 
     constructor() {

@@ -1,8 +1,6 @@
-///<reference path="pxtpackage.d.ts" />
-
-import { float16toUInt16, float32ToUInt32 } from './float16'
-import { asmDeps, asmFns } from './library'
-import * as U from './util'
+import { float16toUInt16, float32ToUInt32 } from './float16.js'
+import { asmDeps, asmFns } from './library.js'
+import * as U from './util.js'
 
 const unrollLimit = 10
 
@@ -252,7 +250,7 @@ export function toThumb(modelInfo: ModelInfo, ops: Op[]) {
     const weightAddrDO = 0
     const zeroDO = 4
     const descWords = 2
-    const usedFns: SMap<boolean> = {}
+    const usedFns: Record<string, boolean> = {}
 
     const hasTest = !!modelInfo.opts.testInput && !!modelInfo.opts.includeTest
     let ind = ""
@@ -283,7 +281,7 @@ export function toThumb(modelInfo: ModelInfo, ops: Op[]) {
         initCmt += stringifyComment(op.fname) + "\n"
     }
 
-    let regAlloc: SMap<number> = {}
+    let regAlloc: Record<string, number> = {}
     let resText = `${stringifyComment(modelInfo.stats)}
     .cpu cortex-m4
     .text
@@ -355,8 +353,8 @@ _header:
 
     function alloc(r: Reg, f?: () => void) {
         assert(!regAlloc[r])
-        const copy: SMap<number> = {}
-        const used: SMap<boolean> = {}
+        const copy: Record<string, number> = {}
+        const used: Record<string, boolean> = {}
         for (const k of Object.keys(regAlloc)) {
             copy[k] = regAlloc[k]
             used[copy[k]] = true
@@ -1054,7 +1052,7 @@ function cloneOp(op: Op): Op {
     }
 }
 
-export function optimize(ops: Op[], replMap: SMap<Reg> = {}): Op[] {
+export function optimize(ops: Op[], replMap: Record<string, Reg> = {}): Op[] {
     const repl = (r: Reg) => {
         if (!r) return r
         if (replMap[r] != undefined)

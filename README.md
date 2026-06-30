@@ -1,5 +1,19 @@
 # ML4F - Machine Learning model compiler for Cortex-M4F
 
+## Notes on this fork
+
+This is the Micro:bit Educational Foundation's fork of [`microsoft/ml4f`](https://github.com/microsoft/ml4f) (archived upstream) in support of [micro:bit CreateAI][https://github.com/microbit-foundation/ml-trainer/].
+
+Notable changes:
+
+* Simplified for low-effort maintenance:
+    * Dropped the MakeCode (pxt) editor extension and its GitHub Pages demo; this repo is now just the library and CLI.
+    * ESM-only, tsc-only build
+    * yarn -> npm
+* Published to npm as `@microbit/ml4f`.
+
+## Introduction
+
 ML4F takes a [Keras](https://keras.io/) sequential model as an input and compiles it directly to 
 ARM Thumb machine code for Cortex-M4F and better (M7, M33 etc.).
 The performance (latency) is typically an order of magnitude better than the
@@ -36,7 +50,7 @@ Feel free to report what other operators might be useful (along with example mod
 ## Usage
 
 ```bash
-npm i -g ml4f
+npm i -g @microbit/ml4f
 ml4f my-model
 ```
 
@@ -114,22 +128,17 @@ This process can be disabled with `--no-validate` option.
 Then layers are composed and the final binary code is generated.
 
 The binary is position-independent and can be loaded from any word-aligned address in flash or RAM.
-Look in `sample/` folder for example invocation from C, 
-or check out our [MakeCode extension](https://github.com/microsoft/pxt-ml4f).
+Look in the `sample/` folder for example invocation from C.
 
 
 ## Compiling
 
 ```
-yarn install
-yarn watch
-# in another window
-http-server -c1
+npm install
+npm run watch
 ```
 
-Then open http://localhost:8080/
-
-Also, run `./ml4f` in this folder.
+Run `./ml4f` in this folder to exercise the CLI.
 
 ## Contributing
 

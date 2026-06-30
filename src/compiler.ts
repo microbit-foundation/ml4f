@@ -1,12 +1,10 @@
-///<reference path="pxtpackage.d.ts" />
-
 import * as tf from '@tensorflow/tfjs'
-import * as tfi from './tfi'
-import * as U from './util'
+import * as tfi from './tfi.js'
+import * as U from './util.js'
 
-import * as ir from "./ir"
-import { Reg } from "./ir"
-import { mkRuntime } from './runtime'
+import * as ir from "./ir.js"
+import { Reg } from "./ir.js"
+import { mkRuntime } from './runtime.js'
 
 export type Options = ir.Options
 export interface CompileResult {
@@ -54,7 +52,7 @@ interface LayerInfo {
 }
 
 let inited = false
-const compilers: SMap<LayerCompileInfo> = {
+const compilers: Record<string, LayerCompileInfo> = {
     Conv2D: { compile: compileConv, computePaddedInputShape: paddingConv },
     Conv1D: { compile: compileConv, computePaddedInputShape: paddingConv },
     DepthwiseConv2D: { compile: compileDepthConv, computePaddedInputShape: paddingConv },

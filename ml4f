@@ -1,2 +1,3 @@
 #!/usr/bin/env node
-require('./built/cli.cjs').mainCli()
+import { mainCli } from "./built/cli.js"
+mainCli()
