@@ -1,8 +1,8 @@
-export const asmDeps: SMap<string[]> = {
+export const asmDeps: Record<string, string[]> = {
     'softmax': ['expf_asm']
 }
 
-export const asmFns: SMap<string> = {
+export const asmFns: Record<string, string> = {
     "expf_asm": `
 // based on https://stackoverflow.com/questions/29381117
 expf_asm:

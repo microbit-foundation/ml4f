@@ -1,9 +1,9 @@
 import * as tf from '@tensorflow/tfjs'
-import * as U from './util'
-import { CompileResult, Options } from './compiler';
-import { compileAndTest, compileModelAndFullValidate, setRandomWeights } from './driver';
-import { testFloatConv } from './float16';
-import { mkRuntime } from './runtime';
+import * as U from './util.js'
+import { CompileResult, Options } from './compiler.js';
+import { compileAndTest, compileModelAndFullValidate, setRandomWeights } from './driver.js';
+import { testFloatConv } from './float16.js';
+import { mkRuntime } from './runtime.js';
 
 
 function randomModel() {
@@ -70,7 +70,7 @@ export async function runBrowser(seed: number) {
     console.log(Date.now() - t0 + "ms")
 }
 
-function getSampleModels(): SMap<tf.layers.Layer[]> {
+function getSampleModels(): Record<string, tf.layers.Layer[]> {
     return {
         id: [tf.layers.inputLayer({
             inputShape: [10, 3, 1]
@@ -296,7 +296,7 @@ function getSampleModels(): SMap<tf.layers.Layer[]> {
     }
 }
 
-let _models: SMap<tf.layers.Layer[]>
+let _models: Record<string, tf.layers.Layer[]>
 
 export function allSampleModels() {
     if (!_models) _models = getSampleModels()

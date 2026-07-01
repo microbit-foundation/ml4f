@@ -2,7 +2,8 @@ import * as tf from '@tensorflow/tfjs'
 import * as fs from 'fs'
 import * as path from 'path'
 import * as child_process from 'child_process'
-import { program as commander } from "commander"
+import { createRequire } from 'module'
+import { parseArgs } from 'node:util'
 import {
     compileModel, compileModelAndFullValidate,
     evalModel,
@@ -11,7 +12,10 @@ import {
     Options, runModel, sampleModel, testAllModels,
     testFloatConv,
     toCSource
-} from '../../src/ml4f'
+} from './ml4f.js'
+
+// package.json lives outside rootDir, so read it at runtime rather than import it.
+const require = createRequire(import.meta.url)
 
 interface CmdOptions {
     debug?: boolean
@@ -184,34 +188,82 @@ async function processModelFile(modelFile: string) {
     }
 }
 
-export async function mainCli() {
-    // require('@tensorflow/tfjs-node');
+const HELP = `Usage: ml4f [options] <model>
 
+Options:
+  -d, --debug                enable debugging
+  -n, --no-validate          don't validate resulting model
+  -g, --no-optimize          don't optimize IR
+  -h, --float16              use float16 weights
+  -t, --test-data            include test data in binary model
+  -T, --self-test            run self-test of all included sample models
+  -s, --sample-model <name>  use an included sample model
+  -e, --eval <file.json>     evaluate model (confusion matrix, accuracy) on given test data
+  -o, --output <folder>      path to store compilation results (default: 'built')
+  -b, --basename <name>      basename of model files (default: 'model')
+  -f, --force                force compilation even if certain errors are detected
+  -j, --load-js <model.js>   load compiled model in JavaScript format
+  -V, --version              output the version number
+      --help                 display this help
+`
+
+export async function mainCli() {
     // shut up warning
     (tf.backend() as any).firstUse = false;
 
-    const pkg = require("../../package.json")
-    commander
-        .version(pkg.version)
-        .option("-d, --debug", "enable debugging")
-        .option("-n, --no-validate", "don't validate resulting model")
-        .option("-g, --no-optimize", "don't optimize IR")
-        .option("-h, --float16", "use float16 weights")
-        .option("-t, --test-data", "include test data in binary model")
-        .option("-T, --self-test", "run self-test of all included sample models")
-        .option("-s, --sample-model <name>", "use an included sample model")
-        .option("-e, --eval <file.json>", "evaluate model (confusion matrix, accuracy) on a given test data")
-        .option("-o, --output <folder>", "path to store compilation results (default: 'built')")
-        .option("-b, --basename <name>", "basename of model files (default: 'model')")
-        .option("-f, --force", "force compilation even if certain errors are detected")
-        .option("-j, --load-js <model.js>", "load compiled model in JavaScript format")
-        .arguments("<model>")
-        .parse(process.argv)
+    let values: Record<string, any>
+    let positionals: string[]
+    try {
+        ({ values, positionals } = parseArgs({
+            args: process.argv.slice(2),
+            allowPositionals: true,
+            options: {
+                debug: { type: "boolean", short: "d" },
+                "no-validate": { type: "boolean", short: "n" },
+                "no-optimize": { type: "boolean", short: "g" },
+                // Regrettably, -h is --float16 (half precision), not help
+                float16: { type: "boolean", short: "h" },
+                "test-data": { type: "boolean", short: "t" },
+                "self-test": { type: "boolean", short: "T" },
+                "sample-model": { type: "string", short: "s" },
+                eval: { type: "string", short: "e" },
+                output: { type: "string", short: "o", default: "built" },
+                basename: { type: "string", short: "b", default: "model" },
+                force: { type: "boolean", short: "f" },
+                "load-js": { type: "string", short: "j" },
+                version: { type: "boolean", short: "V" },
+                help: { type: "boolean" },
+            },
+        }))
+    } catch (e) {
+        console.error((e as Error).message)
+        process.exit(1)
+    }
 
-    options = commander as CmdOptions
+    if (values.help) {
+        console.log(HELP)
+        process.exit(0)
+    }
 
-    if (!options.output) options.output = "built"
-    if (!options.basename) options.basename = "model"
+    if (values.version) {
+        console.log(require("../package.json").version)
+        process.exit(0)
+    }
+
+    options = {
+        debug: values.debug,
+        output: values.output,
+        basename: values.basename,
+        validate: !values["no-validate"],
+        testData: values["test-data"],
+        sampleModel: values["sample-model"],
+        loadJs: values["load-js"],
+        selfTest: values["self-test"],
+        optimize: !values["no-optimize"],
+        float16: values.float16,
+        eval: values.eval,
+        force: values.force,
+    }
 
     if (options.selfTest) {
         testFloatConv()
@@ -232,16 +284,14 @@ export async function mainCli() {
         process.exit(0)
     }
 
-    if (!options.sampleModel && commander.args.length != 1) {
+    if (!options.sampleModel && positionals.length != 1) {
         console.error("exactly one model argument expected")
         process.exit(1)
     }
 
     try {
-        await processModelFile(commander.args[0])
+        await processModelFile(positionals[0])
     } catch (e) {
         console.error(e.stack)
     }
 }
-
-if (require.main === module) mainCli()

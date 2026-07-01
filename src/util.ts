@@ -12,7 +12,7 @@ export function userError(msg: string): Error {
 }
 
 
-export function lookup<T>(m: pxt.Map<T>, key: string): T {
+export function lookup<T>(m: Record<string, T>, key: string): T {
     if (m.hasOwnProperty(key))
         return m[key]
     return null
@@ -35,12 +35,12 @@ export function startsWith(str: string, prefix: string) {
     return str.slice(0, prefix.length) == prefix
 }
 
-export function iterMap<T>(m: pxt.Map<T>, f: (k: string, v: T) => void) {
+export function iterMap<T>(m: Record<string, T>, f: (k: string, v: T) => void) {
     Object.keys(m).forEach(k => f(k, m[k]))
 }
 
-export function mapMap<T, S>(m: pxt.Map<T>, f: (k: string, v: T) => S) {
-    let r: pxt.Map<S> = {}
+export function mapMap<T, S>(m: Record<string, T>, f: (k: string, v: T) => S) {
+    let r: Record<string, S> = {}
     Object.keys(m).forEach(k => r[k] = f(k, m[k]))
     return r
 }
