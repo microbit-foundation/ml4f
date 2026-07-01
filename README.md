@@ -45,7 +45,7 @@ Plus some no-ops:
 * `Reshape`
 
 Feel free to report what other operators might be useful (along with example models) via 
-[GitHub Issues](https://github.com/microsoft/ml4f/issues).
+[GitHub Issues](https://github.com/microbit-foundation/ml4f/issues).
 
 ## Usage
 
