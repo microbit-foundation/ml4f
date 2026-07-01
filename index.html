@@ -3,19 +3,25 @@
 
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ML4F</title>
+  <script type="importmap">
+    {
+      "imports": {
+        "@tensorflow/tfjs": "https://esm.sh/@tensorflow/tfjs@4.10.0"
+      }
+    }
+  </script>
 
-
-  <!-- Import the main script file -->
-  <script src="built/ml4f.js"></script>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const v = parseInt(window.location.search.replace(/.*seed=/, ""))
-      ml4f.runBrowser(v || 0)
-    });
+  <!-- Heads up: runBrowser compiles with optimize:false, which trips a
+       pre-existing assertion in the unoptimized IR path (and float16 tolerance
+       edges on some seeds). It fails identically under Node, so it is not a
+       browser/module problem. The maintained gate is `npm test` (optimize:true);
+       this page is kept as a browser playground. -->
+  <script type="module">
+    import { runBrowser } from './built/ml4f.js'
+    const seed = parseInt(new URLSearchParams(location.search).get('seed')) || 0
+    runBrowser(seed)
   </script>
 
 </head>
